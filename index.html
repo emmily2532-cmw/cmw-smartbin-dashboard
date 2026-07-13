@@ -7,23 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-slate-50 font-sans min-h-screen text-slate-800">
+<body class="bg-slate-50 font-sans min-h-screen text-slate-800 flex flex-col">
 
     <header class="bg-blue-600 text-white shadow-md py-4 px-6 mb-8">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-wide flex items-center gap-2">
-                🗑️ CMW Smart Bin IoT Monitoring
+        <div class="max-w-7xl mx-auto flex items-center gap-4">
+            <img src="https://i.postimg.cc/d3k1PmZh/Logo-chmw.jpg" alt="Logo CMW" class="w-14 h-14 object-cover bg-white rounded-full shadow-sm border-2 border-white">
+            <h1 class="text-2xl font-bold tracking-wide">
+                CMW Smart Bin IoT Monitoring
             </h1>
-            <button onclick="fetchData()" class="bg-blue-700 hover:bg-blue-800 transition px-4 py-2 rounded-lg text-sm font-medium shadow">
-                🔄 รีเฟรชข้อมูลล่าสุด
-            </button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-grow w-full">
         
         <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-700">ถังขยะจุดที่ 1 (Bin_1)</h2>
@@ -39,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 relative overflow-hidden">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-700">ถังขยะจุดที่ 2 (Bin_2)</h2>
@@ -66,15 +64,21 @@
 
     </main>
 
+    <footer class="bg-slate-800 text-slate-300 py-6 mt-4 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-semibold text-sm md:text-base mb-1">โครงงานสะเต็มศึกษาและกล่องสมองกล (STEM & microcontroller Project)</p>
+            <p class="text-xs md:text-sm text-slate-400">ระดับ มัธยมศึกษาตอนต้น โรงเรียนเชียงม่วนวิทยาคม</p>
+        </div>
+    </footer>
+
     <script>
-        // 🌟 ใส่ Web App URL ที่ได้จากขั้นตอนดึงข้อมูลตรงนี้
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNn04X-bB4YKjg_kG7zDio6Lrudfb8Ch7XtWnYyvGXSLonQvPX30154eiA_qYED4luwA/exec"; 
+        // 🌟 สำคัญ: อย่าวางลืม Web App URL ของคุณครูตรงนี้นะครับ
+        const SCRIPT_URL = "นำ_WEB_APP_URL_มาวางที่นี่"; 
         
         let trendChartObj = null;
 
         async function fetchData() {
             try {
-                // เรียกดึงข้อมูลในรูปแบบ JSON ผ่าน Action=read
                 const response = await fetch(`${SCRIPT_URL}?action=read`);
                 const data = await response.json();
                 
@@ -84,13 +88,10 @@
                 }
             } catch (error) {
                 console.error("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล:", error);
-                alert("ไม่สามารถดึงข้อมูลจาก Cloud ได้ กรุณาตรวจสอบ URL หรือสิทธิ์การ Deploy");
             }
         }
 
-        // ฟังก์ชันประมวลผลการ์ดสถานะเรียลไทม์ล่าสุด
         function processRealtimeStatus(data) {
-            // หาข้อมูลล่าสุดของ Bin_1 และ Bin_2
             const latestBin1 = data.filter(item => item.bin === "Bin_1").pop();
             const latestBin2 = data.filter(item => item.bin === "Bin_2").pop();
 
@@ -110,7 +111,6 @@
             barEl.style.width = `${itemData.level}%`;
             timeEl.innerText = `อัปเดตล่าสุด: ${formattedTime}`;
 
-            // ปรับสีและความสวยงามตามระดับขยะ
             if (itemData.level >= 80) {
                 barEl.className = "bg-red-500 h-full transition-all duration-500 animate-pulse";
                 badgeEl.className = "px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700";
@@ -126,9 +126,7 @@
             }
         }
 
-        // ฟังก์ชันคำนวณสถิติหาแนวโน้มถังขยะที่เต็มบ่อยที่สุด
         function processTrendAnalytics(data) {
-            // นับจำนวนครั้งที่มีการรายงานระดับขยะ >= 80% แยกตามรหัสถัง
             let countBin1 = 0;
             let countBin2 = 0;
 
@@ -139,11 +137,10 @@
                 }
             });
 
-            // สร้างหรืออัปเดตกราฟแท่ง Chart.js
             const ctx = document.getElementById('trendChart').getContext('2d');
             
             if (trendChartObj) {
-                trendChartObj.destroy(); // ล้างกราฟเก่าก่อนวาดใหม่เมื่อกดรีเฟรช
+                trendChartObj.destroy(); 
             }
 
             trendChartObj = new Chart(ctx, {
@@ -178,8 +175,13 @@
             });
         }
 
-        // ให้เว็บบอร์ดโหลดข้อมูลอัตโนมัติทันทีเมื่อเปิดหน้ากระดาษ
-        window.onload = fetchData;
+        // 🌟 ระบบดึงข้อมูลอัตโนมัติ (Auto-refresh)
+        window.onload = () => {
+            fetchData(); // ดึงข้อมูลครั้งแรกทันทีที่เปิดเว็บ
+            
+            // สั่งให้รันฟังก์ชัน fetchData ซ้ำแบบอัตโนมัติ ทุกๆ 60 วินาที (60000 มิลลิวินาที)
+            setInterval(fetchData, 60000); 
+        };
     </script>
 </body>
 </html>
